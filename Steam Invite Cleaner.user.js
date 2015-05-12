@@ -99,15 +99,15 @@ $('.scammer_btn.setting').click(function() {
             isOn ? $(this).text("Exclude above level 10: OFF") : $(this).text("Exclude above level 10: ON");
             a_Settings.lvl = !isOn;
             break;
-		case "scammer_btn_cache":
-			isOn ? $(this).text("Cache Results: OFF") && GM_setValue("a_Cache", {}) : $(this).text("Cache Results: ON") && GM_setValue("a_Cache", a_Cache);
+        case "scammer_btn_cache":
+            isOn ? $(this).text("Cache Results: OFF") && GM_setValue("a_Cache", {}) : $(this).text("Cache Results: ON") && GM_setValue("a_Cache", a_Cache);
             a_Settings.cache = !isOn;
-			break;
+            break;
         default:
             break;
     }
-	
-	GM_setValue("a_Settings", a_Settings);
+    
+    GM_setValue("a_Settings", a_Settings);
 });
 
 
@@ -189,9 +189,9 @@ for (var i = 0; i < profiles.length; i++) {
                         }(k)
                     });
                 }
-				else {
-					addNumProcessed();
-				}
+                else {
+                    addNumProcessed();
+                }
             }
         }(i)
     });
@@ -209,7 +209,7 @@ function addNumProcessed(profileid, type) {
         isDone = true;
         setTimeout(function() { $('#scammer_num_status').hide(); }, 2000);
         
-		if (a_Settings.cache) GM_setValue("a_Cache", a_Cache);
+        if (a_Settings.cache) GM_setValue("a_Cache", a_Cache);
     }
     else {
         $('#scammer_num_status').text("Gathering profile information. Progress: "+ numProcessed +"/"+ targetProcessed);
