@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Steam Invite Cleaner
 // @namespace    http://www.nuessafura.com/
-// @version      1.0
+// @version      1.2
 // @description  Identifies if the invites are of private profiles or if their CSGO inventory is private
 // @author       Exfridos
 // $downloadUrl	 https://raw.githubusercontent.com/Exfridos/Tampermonkey/master/Steam%20Invite%20Cleaner
@@ -14,6 +14,7 @@
 // ==/UserScript==
 
 /*jshint multistr: true */
+console.log(dada);
 
 var a_Cache = GM_getValue("a_Cache", {});
 var a_Settings = GM_getValue("a_Settings", {"inv": true});
