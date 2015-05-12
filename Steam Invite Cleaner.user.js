@@ -4,7 +4,7 @@
 // @version      1.0
 // @description  Identifies suspicious profiles and mark them for the user to see
 // @author       Exfridos
-// $downloadUrl	 https://raw.githubusercontent.com/Exfridos/Userscripts/master/Steam%20Invite%20Cleaner.user.js
+// $downloadUrl  https://raw.githubusercontent.com/Exfridos/Userscripts/master/Steam%20Invite%20Cleaner.user.js
 // @run-at       document-end
 // @require      http://code.jquery.com/jquery-latest.js
 // @match        http://steamcommunity.com/id/*/home/invites/
@@ -18,44 +18,44 @@
 var a_Cache = GM_getValue("a_Cache", {});
 var a_Settings = GM_getValue("a_Settings", {"inv": true});
 
-GM_addStyle('               			\
-	div#SIC {			      			\
-		margin-top: -12px;				\
-		margin-right: 12px;				\
-        text-align: right;     			\
-    }                       			\
-                            			\
-    .scammer_warning {      			\
-        color: red;         			\
-    }                       			\
-                            			\
-    .scammer_btn {          			\
-        color: orange;      			\
-    }                       			\
-                            			\
-    .scammer_btn.setting {  			\
-        margin-top: 8px; \
-    }                       			\
-                            			\
-    .scammer_btn.setting.on {  			\
+GM_addStyle('                           \
+    div#SIC {                           \
+        margin-top: -12px;              \
+        margin-right: 12px;             \
+        text-align: right;              \
+    }                                   \
+                                        \
+    .scammer_warning {                  \
+        color: red;                     \
+    }                                   \
+                                        \
+    .scammer_btn {                      \
+        color: orange;                  \
+    }                                   \
+                                        \
+    .scammer_btn.setting {              \
+        margin-top: 8px;                \
+    }                                   \
+                                        \
+    .scammer_btn.setting.on {           \
         border-bottom: solid 2px green; \
-    }                       			\
-                            			\
-    .scammer_btn.setting.off {  		\
-        color: red;      				\
-    }                       			\
-                            			\
-    .scammer_btn.action:hover {    		\
-        color: red;         			\
-    }                       			\
-                            			\
-    #scammer_num_status {   			\
-        color: orange;      			\
-    }                       			\
-                            			\
-    .hasOffered {           			\
-        color: orange;      			\
-    }                       			\
+    }                                   \
+                                        \
+    .scammer_btn.setting.off {          \
+        color: red;                     \
+    }                                   \
+                                        \
+    .scammer_btn.action:hover {         \
+        color: red;                     \
+    }                                   \
+                                        \
+    #scammer_num_status {               \
+        color: orange;                  \
+    }                                   \
+                                        \
+    .hasOffered {                       \
+        color: orange;                  \
+    }                                   \
     ');
 
 
@@ -85,22 +85,22 @@ $('.scammer_btn.action').click(function() {
 });
 
 $('.scammer_btn.setting').click(function() {
-	var isOn = $(this).hasClass("on") ? true : false;
-	
-	isOn ? $(this).removeClass("on").addClass("off") : $(this).removeClass("off").addClass("on");
-	
-	switch (this.id) {
-		case "scammer_btn_inv":
-			isOn ? $(this).text("Private CSGO inv checkup: OFF") : $(this).text("Private CSGO inv checkup: ON");
-			a_Settings.inv = !isOn;
-			break;
-		case "scammer_btn_level":
-			isOn ? $(this).text("Exclude above level 10: OFF") : $(this).text("Exclude above level 10: ON");
-			a_Settings.lvl = !isOn;
-			break;
-		default:
-			break;
-	}
+    var isOn = $(this).hasClass("on") ? true : false;
+    
+    isOn ? $(this).removeClass("on").addClass("off") : $(this).removeClass("off").addClass("on");
+    
+    switch (this.id) {
+        case "scammer_btn_inv":
+            isOn ? $(this).text("Private CSGO inv checkup: OFF") : $(this).text("Private CSGO inv checkup: ON");
+            a_Settings.inv = !isOn;
+            break;
+        case "scammer_btn_level":
+            isOn ? $(this).text("Exclude above level 10: OFF") : $(this).text("Exclude above level 10: ON");
+            a_Settings.lvl = !isOn;
+            break;
+        default:
+            break;
+    }
 });
 
 
@@ -111,7 +111,7 @@ $('.invite_row').each(function() {
     var element = $(this);
     var name = $('a.linkTitle', this);
     var profile = $('.acceptDeclineBlock > .linkStandard', this).attr("href").split("( '")[1].split("', ")[0];
-	var level = $('.friendPlayerLevelNum', this).text();
+    var level = $('.friendPlayerLevelNum', this).text();
     profiles.push([element, name, profile, level]);
 });
 
@@ -120,7 +120,7 @@ var numProcessed = -1;
 addNumProcessed();
 for (var i = 0; i < profiles.length; i++) {
     var profileid = profiles[i][2];
-	
+    
     if (profileid in a_Cache) {
         console.log(a_Cache);
         console.log(a_Cache[profileid]);
@@ -139,10 +139,10 @@ for (var i = 0; i < profiles.length; i++) {
         addNumProcessed();
         continue;
     }
-	else if (profiles[i][3] > 10) {
-		addNumProcessed(profiles[n][2], "clean");
-		continue;
-	}
+    else if (profiles[i][3] > 10) {
+        addNumProcessed(profiles[n][2], "clean");
+        continue;
+    }
     GM_xmlhttpRequest({
         method: "GET",
         url: _url + profileid,
@@ -200,7 +200,7 @@ function addNumProcessed(profileid, type) {
         $('#scammer_num_status').text("All information gathered");
         isDone = true;
         setTimeout(function() { $('#scammer_num_status').hide(); }, 2000);
-		GM_setValue("a_Cache", a_Cache);
+        GM_setValue("a_Cache", a_Cache);
     }
     else {
         $('#scammer_num_status').text("Gathering profile information. Progress: "+ numProcessed +"/"+ targetProcessed);
