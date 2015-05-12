@@ -16,7 +16,7 @@
 /*jshint multistr: true */
 
 var a_Cache = GM_getValue("a_Cache", {});
-var a_Settings = GM_getValue("a_Settings", {"inv": true});
+var a_Settings = GM_getValue("a_Settings", {"inv": true, "lvl": true, "cache": true});
 
 GM_addStyle('                           \
     div#SIC {                           \
@@ -63,8 +63,9 @@ GM_addStyle('                           \
 $('.sectionText').append("<div id='SIC'>\
 <a id='scammer_btn_ignore' class='scammer_btn action'>Ignore red-marked profiles</a>\
 &nbsp;&nbsp;|&nbsp;&nbsp;<a id='scammer_btn_block'  class='scammer_btn action'>Block red-marked profiles</a>\
-<br/><br/><a id='scammer_btn_inv'  class='scammer_btn setting "+ (a_Settings.inv ? "on" : "off") +"'>CSGO private inventory checkup: "+ (a_Settings.inv ? "ON" : "OFF") + "</a>&nbsp;\
-&nbsp;&nbsp;|&nbsp;&nbsp;<a id='scammer_btn_level'  class='scammer_btn setting "+ (a_Settings.lvl ? "on" : "off") +"'>Exclude above level 10: "+ (a_Settings.lvl ? "ON" : "OFF") + "</a>&nbsp;\
+<br/><br/><a id='scammer_btn_inv'  class='scammer_btn setting "+ (a_Settings.inv ? "on" : "off") +"'>Private CSGO inv checkup: "+ (a_Settings.inv ? "ON" : "OFF") + "</a>&nbsp;\
+&nbsp;|&nbsp;&nbsp;<a id='scammer_btn_level'  class='scammer_btn setting "+ (a_Settings.lvl ? "on" : "off") +"'>Exclude above level 10: "+ (a_Settings.lvl ? "ON" : "OFF") + "</a>&nbsp;\
+&nbsp;|&nbsp;&nbsp;<a id='scammer_btn_cache'  class='scammer_btn setting "+ (a_Settings.cache ? "on" : "off") +"'>Cache Results: "+ (a_Settings.cache ? "ON" : "OFF") + "</a>&nbsp;\
 </div>");
 
 $('.profile_small_header_text').append("<div id='scammer_num_status'></div>");
@@ -98,9 +99,15 @@ $('.scammer_btn.setting').click(function() {
             isOn ? $(this).text("Exclude above level 10: OFF") : $(this).text("Exclude above level 10: ON");
             a_Settings.lvl = !isOn;
             break;
+		case "scammer_btn_cache":
+			isOn ? $(this).text("Cache Results: OFF") && GM_setValue("a_Cache", {}) : $(this).text("Cache Results: ON") && GM_setValue("a_Cache", a_Cache);
+            a_Settings.cache = !isOn;
+			break;
         default:
             break;
     }
+	
+	GM_setValue("a_Settings", a_Settings);
 });
 
 
@@ -122,8 +129,6 @@ for (var i = 0; i < profiles.length; i++) {
     var profileid = profiles[i][2];
     
     if (profileid in a_Cache) {
-        console.log(a_Cache);
-        console.log(a_Cache[profileid]);
         switch(a_Cache[profileid]) {
             case "private":
                 $(profiles[i][1]).prepend("<span class='scammer_warning'>Private</span> ");
@@ -139,8 +144,8 @@ for (var i = 0; i < profiles.length; i++) {
         addNumProcessed();
         continue;
     }
-    else if (profiles[i][3] > 10) {
-        addNumProcessed(profiles[n][2], "clean");
+    else if (a_Settings.lvl && profiles[i][3] >= 10) {
+        addNumProcessed(profileid, "clean");
         continue;
     }
     GM_xmlhttpRequest({
@@ -184,6 +189,9 @@ for (var i = 0; i < profiles.length; i++) {
                         }(k)
                     });
                 }
+				else {
+					addNumProcessed();
+				}
             }
         }(i)
     });
@@ -200,7 +208,8 @@ function addNumProcessed(profileid, type) {
         $('#scammer_num_status').text("All information gathered");
         isDone = true;
         setTimeout(function() { $('#scammer_num_status').hide(); }, 2000);
-        GM_setValue("a_Cache", a_Cache);
+        
+		if (a_Settings.cache) GM_setValue("a_Cache", a_Cache);
     }
     else {
         $('#scammer_num_status').text("Gathering profile information. Progress: "+ numProcessed +"/"+ targetProcessed);
