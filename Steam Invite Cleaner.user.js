@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Steam Invite Cleaner
 // @namespace    http://www.nuessafura.com/
-// @version      1.0.1
+// @version      1.0.2
 // @description  Identifies suspicious profiles and mark them for the user to see
 // @author       Exfridos
 // $downloadUrl  https://raw.githubusercontent.com/Exfridos/Userscripts/master/Steam%20Invite%20Cleaner.user.js
@@ -13,6 +13,7 @@
 // @match        https://steamcommunity.com/profiles/*/home/invites/
 // @grant        GM_getValue
 // @grant        GM_setValue
+// @grant        GM_deleteValue
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
@@ -21,13 +22,16 @@
 
 Version 1.0.1)
     Firefox Fix: Added @grant to the Userscript header. Without them Firefox could not recognize the GM_ functions.
+    
+Version 1.0.2)
+    Now properly stores objects as a string which fixes some bugs whilest running at Firefox
 
 --            */
 
 /*jshint multistr: true */
 
-var a_Cache = GM_getValue("a_Cache", {});
-var a_Settings = GM_getValue("a_Settings", {"inv": true, "lvl": true, "cache": true});
+var a_Cache = EXI_getValue("a_Cache", {});
+var a_Settings = EXI_getValue("a_Settings", {inv: true, lvl: true, cache: true});
 
 GM_addStyle('                           \
     div#SIC {                           \
@@ -99,26 +103,51 @@ $('.scammer_btn.action').click(function() {
 $('.scammer_btn.setting').click(function() {
     var isOn = $(this).hasClass("on") ? true : false;
     
-    isOn ? $(this).removeClass("on").addClass("off") : $(this).removeClass("off").addClass("on");
-    
+    if (isOn) {
+        $(this).removeClass("on").addClass("off");
+    }
+    else {
+        $(this).removeClass("off").addClass("on");
+    }
+  	
+	var msg;
     switch (this.id) {
         case "scammer_btn_inv":
-            isOn ? $(this).text("Private CSGO inv checkup: OFF") : $(this).text("Private CSGO inv checkup: ON");
             a_Settings.inv = !isOn;
+            msg = isOn ? "Private CSGO inv checkup: OFF" : "Private CSGO inv checkup: ON";
             break;
+        
         case "scammer_btn_level":
-            isOn ? $(this).text("Exclude above level 10: OFF") : $(this).text("Exclude above level 10: ON");
+            console.log(a_Settings);
+            console.log(a_Settings.lvl);
             a_Settings.lvl = !isOn;
+            console.log("dadada");
+            msg = isOn ? "Exclude above level 10: OFF" : "Exclude above level 10: ON";
             break;
+           
         case "scammer_btn_cache":
-            isOn ? $(this).text("Cache Results: OFF") && GM_setValue("a_Cache", {}) : $(this).text("Cache Results: ON") && GM_setValue("a_Cache", a_Cache);
+            if (isOn) {
+                EXI_setValue("a_Cache", {});
+                msg = "Cache Results: OFF";
+                console.log("I ran");
+            } else {
+                console.log("I ran2");
+                EXI_setValue("a_Cache", a_Cache);
+                console.log("dadadadada");
+                msg = "Cache Results: ON";
+            }
+            console.log("test1");
             a_Settings.cache = !isOn;
             break;
+           
         default:
             break;
     }
-    
-    GM_setValue("a_Settings", a_Settings);
+    $(this).text(msg);
+  
+  
+    console.log("test2");
+    EXI_setValue("a_Settings", a_Settings);
 });
 
 
@@ -196,14 +225,14 @@ for (var i = 0; i < profiles.length; i++) {
                                     $(profiles[n][0]).addClass("scammer_clean");
                                     addNumProcessed(profiles[n][2], "clean");
                                 }
-                            }
+                            };
                         }(k)
                     });
                 }
                 else {
                     addNumProcessed();
                 }
-            }
+            };
         }(i)
     });
 }
@@ -220,9 +249,26 @@ function addNumProcessed(profileid, type) {
         isDone = true;
         setTimeout(function() { $('#scammer_num_status').hide(); }, 2000);
         
-        if (a_Settings.cache) GM_setValue("a_Cache", a_Cache);
+        if (a_Settings.cache) EXI_setValue("a_Cache", a_Cache);
     }
     else {
         $('#scammer_num_status').text("Gathering profile information. Progress: "+ numProcessed +"/"+ targetProcessed);
     }
+}
+
+function EXI_setValue(key, value) {
+    if (typeof(key) !== "string") return false;
+    return GM_setValue(key, JSON.stringify(value));
+}
+
+function EXI_getValue(key, def) {
+    if (typeof(key) !== "string") return false;
+    
+	  var val = GM_getValue(key, false);
+    // If the val is an object at this state, it is broken! Emergency! Delete! Ring the Fire alarm! Ding ding!
+    if (typeof(val) === "object") {
+        GM_deleteValue(key);
+        val = false;
+    }
+    return val !== false ? JSON.parse(val) : def;
 }
