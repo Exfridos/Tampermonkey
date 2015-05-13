@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Steam Invite Cleaner
 // @namespace    http://www.nuessafura.com/
-// @version      1.0
+// @version      1.0.1
 // @description  Identifies suspicious profiles and mark them for the user to see
 // @author       Exfridos
 // $downloadUrl  https://raw.githubusercontent.com/Exfridos/Userscripts/master/Steam%20Invite%20Cleaner.user.js
@@ -11,7 +11,18 @@
 // @match        https://steamcommunity.com/id/*/home/invites/
 // @match        http://steamcommunity.com/profiles/*/home/invites/
 // @match        https://steamcommunity.com/profiles/*/home/invites/
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_addStyle
+// @grant        GM_xmlhttpRequest
 // ==/UserScript==
+
+/* Change Log --
+
+Version 1.0.1)
+    Firefox Fix: Added @grant to the Userscript header. Without them Firefox could not recognize the GM_ functions.
+
+--            */
 
 /*jshint multistr: true */
 
